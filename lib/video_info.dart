@@ -14,6 +14,10 @@ class VideoInfo extends StatefulWidget {
 class _VideoInfoState extends State<VideoInfo> {
   List<dynamic> videos = []; // Specify the type of the list
   bool _playAreaShown = false;
+  bool _isPlaying = false;
+  bool _disposed = false;
+  int _isPlayingIndex = -1;
+
   VideoPlayerController? _controller;
   // Load JSON data asynchronously
   Future<void> _initData() async {
@@ -34,6 +38,15 @@ class _VideoInfoState extends State<VideoInfo> {
   void initState() {
     super.initState();
     _initData(); // Load data when the widget initializes
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    _controller?.pause();
+    _controller?.dispose();
+    _controller = null;
+    super.dispose();
   }
 
   @override
@@ -212,7 +225,8 @@ class _VideoInfoState extends State<VideoInfo> {
                       ),
 
                       // area for playing the video
-                      _playVideo(context)
+                      _playVideo(context),
+                      _controllerView(context),
                     ]),
                   ),
             // container for video lists
@@ -279,6 +293,74 @@ class _VideoInfoState extends State<VideoInfo> {
 //===========================================================================
 // custom function for code readability
 //===========================================================================
+
+  Widget _controllerView(BuildContext context) {
+    return Container(
+      height: 120,
+      width: MediaQuery.of(context).size.width,
+      color: CustomColor.AppColor.gradientSecond,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // rewind button
+          TextButton(
+            onPressed: () async {
+              final index = _isPlayingIndex - 1;
+              if (index >= 0 && videos.length >= 0) {
+                _initializeVideo(index);
+              } else {
+                Get.snackbar("Video", "No More videos to play");
+              }
+            },
+            child: Icon(
+              Icons.fast_rewind,
+              size: 36,
+              color: Colors.white,
+            ),
+          ),
+          // Play / pause
+          TextButton(
+            onPressed: () async {
+              if (_isPlaying) {
+                setState(() {
+                  _isPlaying = false;
+                });
+                _controller?.pause();
+              } else {
+                setState(() {
+                  _isPlaying = true;
+                });
+                _controller?.play();
+              }
+            },
+            child: Icon(
+              _isPlaying ? Icons.pause_circle : Icons.play_arrow,
+              size: 36,
+              color: Colors.white,
+            ),
+          ),
+
+          // fast forward
+          TextButton(
+            onPressed: () async {
+              final index = _isPlayingIndex + 1;
+              if (index <= videos.length - 1) {
+                _initializeVideo(index);
+              } else {
+                Get.snackbar("Video",
+                    "Currently You are watching the last video from the playlist");
+              }
+            },
+            child: Icon(
+              Icons.fast_forward,
+              size: 36,
+              color: Colors.white,
+            ),
+          )
+        ],
+      ),
+    );
+  }
 
   _listView() {
     return ListView.builder(
@@ -413,12 +495,49 @@ class _VideoInfoState extends State<VideoInfo> {
   }
 
   _onTapVideo(int videoIndex) {
+    _initializeVideo(videoIndex);
+  }
+
+  var _onUpdateControllerTime;
+  void _onControllerUpdate() async {
+    if (_disposed) {
+      return;
+    }
+    _onUpdateControllerTime = 0;
+    final now = DateTime.now().millisecondsSinceEpoch;
+    if (_onUpdateControllerTime > now) {
+      return;
+    }
+    _onUpdateControllerTime = now + 500;
+    final controller = _controller;
+    if (controller == null) {
+      debugPrint("controller is null");
+      return;
+    }
+    if (!controller.value.isInitialized) {
+      debugPrint("controller is not initialized");
+      return;
+    }
+    final playing = controller.value.isPlaying;
+    _isPlaying = playing;
+  }
+
+  _initializeVideo(int videoIndex) {
     final controller =
         VideoPlayerController.network(videos[videoIndex]["videoUrl"]);
+    final old = _controller;
     _controller = controller;
+    if (old != null) {
+      old.removeListener(_onControllerUpdate);
+      old.pause();
+    }
     setState(() {});
     controller
       ..initialize().then((_) {
+        old?.dispose();
+        _isPlayingIndex = videoIndex;
+        // add a listener
+        controller.addListener(_onControllerUpdate);
         controller.play();
         setState(() {});
       });
