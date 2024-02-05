@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:video_player/video_player.dart';
 import 'colors.dart' as CustomColor;
 
 class VideoInfo extends StatefulWidget {
@@ -12,7 +13,8 @@ class VideoInfo extends StatefulWidget {
 
 class _VideoInfoState extends State<VideoInfo> {
   List<dynamic> videos = []; // Specify the type of the list
-
+  bool _playAreaShown = false;
+  VideoPlayerController? _controller;
   // Load JSON data asynchronously
   Future<void> _initData() async {
     try {
@@ -38,137 +40,182 @@ class _VideoInfoState extends State<VideoInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-          CustomColor.AppColor.gradientFirst.withOpacity(0.8),
-          CustomColor.AppColor.gradientSecond
-        ], begin: const FractionalOffset(0.0, 0.4))),
+        decoration: _playAreaShown == false
+            ? BoxDecoration(
+                gradient: LinearGradient(colors: [
+                CustomColor.AppColor.gradientFirst.withOpacity(0.8),
+                CustomColor.AppColor.gradientSecond
+              ], begin: const FractionalOffset(0.0, 0.4)))
+            : BoxDecoration(color: CustomColor.AppColor.gradientSecond),
         child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.only(top: 70, left: 30, right: 30),
-              width: MediaQuery.of(context).size.width,
-              height: 300,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Icons shows at top
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          Get.back();
-                        },
-                        child: Icon(
-                          Icons.arrow_back_ios,
-                          size: 20,
-                          color: CustomColor.AppColor.secondPageIconColor,
+            // container for play area and header
+            _playAreaShown == false
+                ? Container(
+                    padding:
+                        const EdgeInsets.only(top: 70, left: 30, right: 30),
+                    width: MediaQuery.of(context).size.width,
+                    height: 300,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Icons shows at top
+                        Row(
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                Get.back();
+                              },
+                              child: Icon(
+                                Icons.arrow_back_ios,
+                                size: 20,
+                                color: CustomColor.AppColor.secondPageIconColor,
+                              ),
+                            ),
+                            Expanded(child: Container()),
+                            Icon(
+                              Icons.info_outline,
+                              size: 20,
+                              color: CustomColor.AppColor.secondPageIconColor,
+                            )
+                          ],
+                        ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Text(
+                          "Next Workout",
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: CustomColor.AppColor.secondPageTitleColor),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          "Legs Toning",
+                          style: TextStyle(
+                              fontSize: 25,
+                              color: CustomColor.AppColor.secondPageTitleColor),
+                        ),
+                        SizedBox(
+                          height: 50,
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              width: 90,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  gradient: LinearGradient(colors: [
+                                    CustomColor.AppColor
+                                        .secondPageContainerGradient1stColor,
+                                    CustomColor.AppColor
+                                        .secondPageContainerGradient2ndColor
+                                  ])),
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.timer,
+                                      size: 20,
+                                      color: CustomColor
+                                          .AppColor.secondPageIconColor,
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      "68 min",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: CustomColor
+                                              .AppColor.secondPageIconColor),
+                                    )
+                                  ]),
+                            ),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            Container(
+                              width: 200,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  gradient: LinearGradient(colors: [
+                                    CustomColor.AppColor
+                                        .secondPageContainerGradient1stColor,
+                                    CustomColor.AppColor
+                                        .secondPageContainerGradient2ndColor
+                                  ])),
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.handyman_rounded,
+                                      size: 20,
+                                      color: CustomColor
+                                          .AppColor.secondPageIconColor,
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      "Resistent Band,Kettle",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: CustomColor
+                                              .AppColor.secondPageIconColor),
+                                    )
+                                  ]),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          width: 20,
+                        )
+                      ],
+                    ),
+                  )
+                :
+
+                //video player and controls
+                Container(
+                    child: Column(children: [
+                      // back button and info button section
+                      Container(
+                        height: 100,
+                        padding:
+                            const EdgeInsets.only(top: 50, left: 30, right: 30),
+                        child: Row(
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                debugPrint("You clicked on back");
+                              },
+                              child: Icon(
+                                Icons.arrow_back_ios,
+                                size: 20,
+                                color: CustomColor.AppColor.secondPageIconColor,
+                              ),
+                            ),
+                            Expanded(child: Container()),
+                            Icon(
+                              Icons.info_outline,
+                              size: 20,
+                              color:
+                                  CustomColor.AppColor.secondPageTopIconColor,
+                            )
+                          ],
                         ),
                       ),
-                      Expanded(child: Container()),
-                      Icon(
-                        Icons.info_outline,
-                        size: 20,
-                        color: CustomColor.AppColor.secondPageIconColor,
-                      )
-                    ],
+
+                      // area for playing the video
+                      _playVideo(context)
+                    ]),
                   ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Text(
-                    "Next Workout",
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: CustomColor.AppColor.secondPageTitleColor),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                    "Legs Toning",
-                    style: TextStyle(
-                        fontSize: 25,
-                        color: CustomColor.AppColor.secondPageTitleColor),
-                  ),
-                  SizedBox(
-                    height: 50,
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        width: 90,
-                        height: 30,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            gradient: LinearGradient(colors: [
-                              CustomColor
-                                  .AppColor.secondPageContainerGradient1stColor,
-                              CustomColor
-                                  .AppColor.secondPageContainerGradient2ndColor
-                            ])),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.timer,
-                                size: 20,
-                                color: CustomColor.AppColor.secondPageIconColor,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                "68 min",
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    color: CustomColor
-                                        .AppColor.secondPageIconColor),
-                              )
-                            ]),
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Container(
-                        width: 200,
-                        height: 30,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            gradient: LinearGradient(colors: [
-                              CustomColor
-                                  .AppColor.secondPageContainerGradient1stColor,
-                              CustomColor
-                                  .AppColor.secondPageContainerGradient2ndColor
-                            ])),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.handyman_rounded,
-                                size: 20,
-                                color: CustomColor.AppColor.secondPageIconColor,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                "Resistent Band,Kettle",
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    color: CustomColor
-                                        .AppColor.secondPageIconColor),
-                              )
-                            ]),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    width: 20,
-                  )
-                ],
-              ),
-            ),
+            // container for video lists
             Expanded(
                 child: Container(
               decoration: BoxDecoration(
@@ -241,7 +288,12 @@ class _VideoInfoState extends State<VideoInfo> {
           // because of clickable
           return GestureDetector(
               onTap: () {
-                debugPrint(videoIndex.toString());
+                _onTapVideo(videoIndex);
+                setState(() {
+                  if (!_playAreaShown) {
+                    _playAreaShown = true;
+                  }
+                });
               },
               child: _buildCards(videoIndex));
         });
@@ -345,5 +397,30 @@ class _VideoInfoState extends State<VideoInfo> {
         ],
       ),
     );
+  }
+
+  Widget _playVideo(BuildContext context) {
+    final controller = _controller;
+    if (controller != null && controller.value.isInitialized) {
+      return AspectRatio(
+        aspectRatio: 16 / 9,
+        child: VideoPlayer(controller),
+      );
+    } else {
+      return AspectRatio(
+          aspectRatio: 16 / 9, child: Center(child: Text("Preparing..")));
+    }
+  }
+
+  _onTapVideo(int videoIndex) {
+    final controller =
+        VideoPlayerController.network(videos[videoIndex]["videoUrl"]);
+    _controller = controller;
+    setState(() {});
+    controller
+      ..initialize().then((_) {
+        controller.play();
+        setState(() {});
+      });
   }
 }
