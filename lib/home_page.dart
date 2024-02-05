@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'colors.dart' as CustomColor;
 
@@ -9,6 +11,26 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List info = [];
+  _initData() {
+    //load json into memory
+    DefaultAssetBundle.of(context)
+        .loadString('json/info.json')
+        .then((value) => {
+              // decode the json
+              info = json.decode(value)
+            });
+  }
+
+  // read json for each tiles
+  @override
+  void initState() {
+    super.initState();
+
+    // private function
+    _initData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -297,7 +319,74 @@ class _HomePageState extends State<HomePage> {
                   )
                 ],
               ),
-            )
+            ),
+
+            // third section
+
+            Row(
+              children: [
+                Text(
+                  "Area of focus",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 25,
+                      color: CustomColor.AppColor.homePageTitle),
+                )
+              ],
+            ),
+
+            // cards inside grid section
+
+            Expanded(
+                child: ListView.builder(
+                    itemCount: info.length,
+                    itemBuilder: (_, i) {
+                      return Row(
+                        children: [
+                          // each tile is a container
+                          Container(
+                            height: 170,
+                            width: 200,
+                            padding: EdgeInsets.only(bottom: 5),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(50),
+                                image: DecorationImage(
+                                    image: AssetImage(info[i]['img'])),
+                                boxShadow: [
+                                  BoxShadow(
+                                    blurRadius: 3,
+                                    offset: Offset(5, 5),
+                                    color: CustomColor.AppColor.gradientSecond
+                                        .withOpacity(0.1),
+                                  ),
+                                  BoxShadow(
+                                    blurRadius: 3,
+                                    offset: Offset(-5, -5),
+                                    color: CustomColor.AppColor.gradientSecond
+                                        .withOpacity(0.1),
+                                  )
+                                ]),
+
+                            // text inside the box
+
+                            child: Center(
+                              child: Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Text(
+                                  info[i]['title'],
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      color:
+                                          CustomColor.AppColor.homePageDetail),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      );
+                    }))
           ],
         ),
       ),
