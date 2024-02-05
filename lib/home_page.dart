@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:video_player/video_info.dart';
 import 'colors.dart' as CustomColor;
 
 class HomePage extends StatefulWidget {
@@ -101,10 +103,15 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(
                   width: 5,
                 ),
-                Icon(
-                  Icons.arrow_forward,
-                  size: 20,
-                  color: CustomColor.AppColor.homePageIcons,
+                InkWell(
+                  onTap: () {
+                    Get.to(() => VideoInfo());
+                  },
+                  child: Icon(
+                    Icons.arrow_forward,
+                    size: 20,
+                    color: CustomColor.AppColor.homePageIcons,
+                  ),
                 )
               ],
             ),
@@ -349,7 +356,7 @@ class _HomePageState extends State<HomePage> {
                 removeTop: true,
                 context: context,
                 child: ListView.builder(
-                    itemCount: info.length.toDouble() ~/ 2,
+                    itemCount: (info.length.toDouble() / 2).toInt(),
                     itemBuilder: (_, i) {
                       int leftCardIndex = i * 2;
                       int rightCardIndex = i * 2 + 1;
