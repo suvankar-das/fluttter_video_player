@@ -204,6 +204,99 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
+            ),
+
+            SizedBox(
+              height: 5,
+            )
+            // Second Section
+            ,
+            Container(
+              height: 180,
+              width: MediaQuery.of(context).size.width,
+              // stack I am using because there are 2 images overlapped , in order to achieve that I need that Stck widget
+              child: Stack(
+                children: [
+                  // image will be placed just like background of this Container
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    margin: const EdgeInsets.only(top: 30),
+                    height: 120,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        image: const DecorationImage(
+                            image: AssetImage("assets/card.jpg"),
+                            fit: BoxFit.fill),
+                        boxShadow: [
+                          BoxShadow(
+                              blurRadius: 10,
+                              offset: const Offset(5, 5),
+                              color: CustomColor.AppColor.gradientSecond
+                                  .withOpacity(.3)),
+                          BoxShadow(
+                              blurRadius: 10,
+                              offset: const Offset(-1, -5),
+                              color: CustomColor.AppColor.gradientSecond
+                                  .withOpacity(.3))
+                        ]),
+                  ),
+
+                  // Girl sitting above above container
+                  Container(
+                    height: 200,
+                    width: MediaQuery.of(context).size.width,
+                    // margin for position of girl
+                    margin: const EdgeInsets.only(right: 200, bottom: 30),
+                    decoration: BoxDecoration(
+                      // uncomment color to test
+                      //color: Colors.redAccent.withOpacity(.2),
+                      borderRadius: BorderRadius.circular(20),
+                      image: const DecorationImage(
+                        image: AssetImage("assets/figure1.png"),
+                        //fit: BoxFit.fill
+                      ),
+                    ),
+                  ),
+
+                  // text beside girl
+                  Container(
+                    // with max finite , it takes available width
+                    width: double.maxFinite,
+                    height: 100,
+                    //color: Colors.amber.withOpacity(0.3),
+                    margin: EdgeInsets.only(left: 150, top: 50),
+
+                    // now place the text
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "You are doing great",
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: CustomColor.AppColor.homePageDetail),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+
+                        // RichText widget has a benefit of apply style for all its children
+                        RichText(
+                            text: TextSpan(
+                                text: "Keep it up \n",
+                                style: TextStyle(
+                                    color:
+                                        CustomColor.AppColor.homePagePlanColor,
+                                    fontSize: 16),
+                                children: [
+                              TextSpan(text: "Stick to your plan")
+                            ]))
+                      ],
+                    ),
+                  )
+                ],
+              ),
             )
           ],
         ),
