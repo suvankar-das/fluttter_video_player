@@ -219,136 +219,130 @@ class _VideoInfoState extends State<VideoInfo> {
                   SizedBox(
                     height: 20,
                   ),
-                  Expanded(
-                      child: ListView.builder(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 30, vertical: 8),
-                          itemCount: videos.length,
-                          itemBuilder: (_, int videoIndex) {
-                            // because of clickable
-                            return GestureDetector(
-                              onTap: () {
-                                debugPrint(videoIndex.toString());
-                              },
-                              child: Container(
-                                height: 135,
-                                //color: Colors.redAccent,
-                                // each video section
-                                child: Column(
-                                  children: [
-                                    // First row whcih contain thumbnail and details text
-                                    Row(
-                                      children: [
-                                        // image as thumnail
-                                        Container(
-                                          width: 80,
-                                          height: 80,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              image: DecorationImage(
-                                                  image: AssetImage(
-                                                      videos[videoIndex]
-                                                          ['thumbnail']))),
-                                        ),
-
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-
-                                        // details text
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              videos[videoIndex]['title'],
-                                              style: TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.only(top: 3),
-                                              child: Text(
-                                                videos[videoIndex]["time"],
-                                                style: TextStyle(
-                                                    color: Colors.grey[500]),
-                                              ),
-                                            )
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 18,
-                                    ),
-                                    // second row for dashed outline
-                                    Row(
-                                      children: [
-                                        // first for pills type line
-                                        Container(
-                                          width: 80,
-                                          height: 20,
-                                          decoration: BoxDecoration(
-                                              color: Color(0xFFeaeefc),
-                                              borderRadius:
-                                                  BorderRadius.circular(10)),
-
-                                          // text of that pill shows in center
-                                          child: Center(
-                                            child: Text(
-                                              "15sec rest",
-                                              style: TextStyle(
-                                                  color: Color(0xFF839FED)),
-                                            ),
-                                          ),
-                                        ),
-
-                                        // dotted line
-                                        Row(
-                                          children: [
-                                            // create a container which will be create that dotted type line
-
-                                            for (int i = 0; i < 70; i++)
-                                              i.isEven
-                                                  ? Container(
-                                                      width: 3,
-                                                      height: 1,
-                                                      decoration: BoxDecoration(
-                                                          color:
-                                                              Color(0xFF839FED),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(2)),
-                                                    )
-                                                  : Container(
-                                                      width: 3,
-                                                      height: 1,
-                                                      decoration: BoxDecoration(
-                                                          color: Colors.white,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(2)),
-                                                    )
-                                          ],
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                          }))
+                  Expanded(child: _listView())
                 ],
               ),
             ))
           ],
         ),
+      ),
+    );
+  }
+
+//===========================================================================
+// custom function for code readability
+//===========================================================================
+
+  _listView() {
+    return ListView.builder(
+        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 8),
+        itemCount: videos.length,
+        itemBuilder: (_, int videoIndex) {
+          // because of clickable
+          return GestureDetector(
+              onTap: () {
+                debugPrint(videoIndex.toString());
+              },
+              child: _buildCards(videoIndex));
+        });
+  }
+
+  _buildCards(int videoIndex) {
+    return Container(
+      height: 135,
+      //color: Colors.redAccent,
+      // each video section
+      child: Column(
+        children: [
+          // First row whcih contain thumbnail and details text
+          Row(
+            children: [
+              // image as thumnail
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    image: DecorationImage(
+                        image: AssetImage(videos[videoIndex]['thumbnail']))),
+              ),
+
+              SizedBox(
+                width: 10,
+              ),
+
+              // details text
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    videos[videoIndex]['title'],
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 3),
+                    child: Text(
+                      videos[videoIndex]["time"],
+                      style: TextStyle(color: Colors.grey[500]),
+                    ),
+                  )
+                ],
+              )
+            ],
+          ),
+          SizedBox(
+            height: 18,
+          ),
+          // second row for dashed outline
+          Row(
+            children: [
+              // first for pills type line
+              Container(
+                width: 80,
+                height: 20,
+                decoration: BoxDecoration(
+                    color: Color(0xFFeaeefc),
+                    borderRadius: BorderRadius.circular(10)),
+
+                // text of that pill shows in center
+                child: Center(
+                  child: Text(
+                    "15sec rest",
+                    style: TextStyle(color: Color(0xFF839FED)),
+                  ),
+                ),
+              ),
+
+              // dotted line
+              Row(
+                children: [
+                  // create a container which will be create that dotted type line
+
+                  for (int i = 0; i < 70; i++)
+                    i.isEven
+                        ? Container(
+                            width: 3,
+                            height: 1,
+                            decoration: BoxDecoration(
+                                color: Color(0xFF839FED),
+                                borderRadius: BorderRadius.circular(2)),
+                          )
+                        : Container(
+                            width: 3,
+                            height: 1,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(2)),
+                          )
+                ],
+              )
+            ],
+          )
+        ],
       ),
     );
   }
