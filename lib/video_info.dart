@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 import 'colors.dart' as CustomColor;
 
+//1:48
+
 class VideoInfo extends StatefulWidget {
   const VideoInfo({super.key});
 
@@ -309,7 +311,22 @@ class _VideoInfoState extends State<VideoInfo> {
               if (index >= 0 && videos.length >= 0) {
                 _initializeVideo(index);
               } else {
-                Get.snackbar("Video", "No More videos to play");
+                Get.snackbar(
+                  "Video",
+                  "",
+                  snackPosition: SnackPosition.BOTTOM,
+                  icon: Icon(
+                    Icons.face,
+                    size: 30,
+                    color: Colors.white,
+                  ),
+                  backgroundColor: CustomColor.AppColor.gradientSecond,
+                  colorText: Colors.white,
+                  messageText: Text(
+                    "No videos ahed!",
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  ),
+                );
               }
             },
             child: Icon(
@@ -347,8 +364,22 @@ class _VideoInfoState extends State<VideoInfo> {
               if (index <= videos.length - 1) {
                 _initializeVideo(index);
               } else {
-                Get.snackbar("Video",
-                    "Currently You are watching the last video from the playlist");
+                Get.snackbar(
+                  "Video",
+                  "",
+                  snackPosition: SnackPosition.BOTTOM,
+                  icon: Icon(
+                    Icons.face,
+                    size: 30,
+                    color: Colors.white,
+                  ),
+                  backgroundColor: CustomColor.AppColor.gradientSecond,
+                  colorText: Colors.white,
+                  messageText: Text(
+                    "Currently You are watching the last video from the playlist",
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  ),
+                );
               }
             },
             child: Icon(
